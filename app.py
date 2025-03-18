@@ -69,39 +69,39 @@ def main():
             # Price Chart with Signals
             fig = go.Figure()
             fig.add_trace(go.Scatter(x=df.index, y=df['Close'],
-                                   mode='lines',
-                                   name='Close Price'))
+                                      mode='lines',
+                                      name='Close Price'))
             
             if strategy == "Simple Moving Average Crossover":
                 fig.add_trace(go.Scatter(x=df.index, y=df[f'SMA_{strategy_params["short_window"]}'],
-                                       mode='lines',
-                                       name=f'SMA {strategy_params["short_window"]}'))
+                                          mode='lines',
+                                          name=f'SMA {strategy_params["short_window"]}'))
                 fig.add_trace(go.Scatter(x=df.index, y=df[f'SMA_{strategy_params["long_window"]}'],
-                                       mode='lines',
-                                       name=f'SMA {strategy_params["long_window"]}'))
+                                          mode='lines',
+                                          name=f'SMA {strategy_params["long_window"]}'))
             
             fig.update_layout(title='Price and Indicators',
-                            xaxis_title='Date',
-                            yaxis_title='Price (₹)',
-                            template='plotly_white')
+                              xaxis_title='Date',
+                              yaxis_title='Price (₹)',
+                              template='plotly_white')
             st.plotly_chart(fig)
             
             # Equity Curve
             fig_equity = go.Figure()
             fig_equity.add_trace(go.Scatter(x=results.index, 
-                                          y=results['portfolio_value'],
-                                          mode='lines',
-                                          name='Portfolio Value'))
+                                              y=results['portfolio_value'],
+                                              mode='lines',
+                                              name='Portfolio Value'))
             fig_equity.update_layout(title='Portfolio Value Over Time',
-                                   xaxis_title='Date',
-                                   yaxis_title='Value (₹)',
-                                   template='plotly_white')
+                                      xaxis_title='Date',
+                                      yaxis_title='Value (₹)',
+                                      template='plotly_white')
             st.plotly_chart(fig_equity)
             
             # Performance Metrics
             col1, col2, col3 = st.columns(3)
             total_return = ((results['portfolio_value'].iloc[-1] - initial_capital) / 
-                          initial_capital * 100)
+                              initial_capital * 100)
             
             col1.metric("Total Return", f"{total_return:.2f}%")
             col2.metric("Number of Trades", len(results[results['position_changed']]))
@@ -111,8 +111,28 @@ def main():
             st.subheader("Trade Log")
             trade_log = results[results['position_changed']].copy()
             if not trade_log.empty:
-                trade_log['action'] = trade_log['position'].map({1: 'Buy', 0: 'Sell'})
-                st.dataframe(trade_log[['action', 'Close', 'portfolio_value']])
+                # Format the trade log for display
+                display_log = pd.DataFrame({
+                    'Date': trade_log.index.strftime('%Y-%m-%d'),
+                    'Action': trade_log['trade_type'],
+                    'Price': trade_log['Close'].round(2),
+                    'Portfolio Value': trade_log['portfolio_value'].round(2)
+                })
+                st.dataframe(
+                    display_log,
+                    column_config={
+                        'Portfolio Value': st.column_config.NumberColumn(
+                            'Portfolio Value',
+                            format="₹%.2f"
+                        ),
+                        'Price': st.column_config.NumberColumn(
+                            'Price',
+                            format="₹%.2f"
+                        )
+                    }
+                )
+            else:
+                st.info("No trades were executed during this period.")
             
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
