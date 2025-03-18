@@ -55,7 +55,7 @@ streamlit run app.py
    - Price chart with indicators
    - Portfolio value curve
    - Performance metrics
-   - Detailed trade log
+   - Detailed trade log...
 
 ## Project Structure
 
