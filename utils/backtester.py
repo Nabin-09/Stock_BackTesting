@@ -15,6 +15,7 @@ def backtest_strategy(df, signals, initial_capital, stop_loss):
     results['portfolio_value'] = float(initial_capital)
     results['position_changed'] = False
     results['trade_type'] = ''  # New column for trade type
+    results['Close'] = df['Close']  # Add Close price to results
 
     stop_loss_decimal = stop_loss / 100
     entry_price = 0.0

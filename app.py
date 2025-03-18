@@ -119,8 +119,8 @@ def main():
                 display_log = pd.DataFrame({
                     'Date': trade_log.index.strftime('%Y-%m-%d'),
                     'Action': trade_log['trade_type'],
-                    'Price': trade_log['Close'].round(2),
-                    'Portfolio Value': trade_log['portfolio_value'].round(2)
+                    'Price': trade_log['Close'],
+                    'Portfolio Value': trade_log['portfolio_value']
                 })
                 st.dataframe(
                     display_log,
